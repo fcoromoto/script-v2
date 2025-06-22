@@ -74,8 +74,8 @@ else
   echo "  ⚠️ Terminator não encontrado. Pulei a configuração como terminal padrão."
 fi
 
-# Instalação e configuração do ZSH
-echo "🧠 Instalando e configurando ZSH com Oh My Zsh + Powerlevel10k..."
+# Instalação e configuração do ZSH com tema Agnoster
+echo "🧠 Instalando e configurando ZSH com Oh My Zsh + tema Agnoster..."
 
 su - "$SUDO_USER" -c '
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -92,23 +92,13 @@ su - "$SUDO_USER" -c '
   [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ] && git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
   [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ] && git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 
-  echo "  🎨 Instalando tema Powerlevel10k..."
-  [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ] && git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
+  echo "  🎨 Configurando tema para 'agnoster'..."
+  sed -i "s|^ZSH_THEME=.*|ZSH_THEME=\"agnoster\"|" "$HOME/.zshrc"
 
-  echo "  ⚙️ Configurando .zshrc..."
-  sed -i "s|^ZSH_THEME=.*|ZSH_THEME=\"powerlevel10k/powerlevel10k\"|" "$HOME/.zshrc"
+  echo "  ⚙️ Configurando plugins no .zshrc..."
   sed -i "s|^plugins=(.*)|plugins=(git zsh-autosuggestions zsh-syntax-highlighting)|" "$HOME/.zshrc"
-  grep -qxF "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" "$HOME/.zshrc" || echo "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" >> "$HOME/.zshrc"
 
-  echo "  📁 Criando .p10k.zsh padrão..."
-  cat > "$HOME/.p10k.zsh" <<EOF
-# Powerlevel10k prompt default
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status time)
-POWERLEVEL9K_MODE='nerdfont-complete'
-EOF
-
-  echo "  ✅ ZSH com Powerlevel10k configurado com sucesso."
+  echo "  ✅ ZSH com tema Agnoster e plugins configurado com sucesso."
 '
 
 echo "🔁 Alterando shell padrão para Zsh (usuário $SUDO_USER)..."
@@ -123,4 +113,4 @@ echo ""
 echo "⚠️ Para que o Terminator seja reconhecido como terminal padrão em toda a sessão,"
 echo "   você precisa fazer logout e login novamente, ou reiniciar o computador."
 
-echo "⚠️ Para ativar o ZSH com Powerlevel10k, feche o terminal atual e abra um novo."
+echo "⚠️ Para ativar o ZSH com Agnoster, feche o terminal atual e abra um novo."
