@@ -65,12 +65,13 @@ fi
 echo "🖥️ Definindo Terminator como terminal padrão do sistema..."
 TERMINATOR_BIN="/usr/bin/terminator"
 if command -v terminator &>/dev/null; then
-  su - "$SUDO_USER" -c "gsettings set org.cinnamon.desktop.default-applications.terminal exec '$TERMINATOR_BIN'"
-  su - "$SUDO_USER" -c "gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg '-x'"
+  sudo -u "$SUDO_USER" dbus-launch gsettings set org.cinnamon.desktop.default-applications.terminal exec "$TERMINATOR_BIN"
+  sudo -u "$SUDO_USER" dbus-launch gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg "-x"
   echo "  ✅ Terminator definido como terminal padrão."
 else
   echo "  ⚠️ Terminator não encontrado. Pulei a configuração como terminal padrão."
 fi
+
 
 echo "🧹 Limpando cache do apt..."
 apt clean
