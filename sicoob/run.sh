@@ -28,6 +28,7 @@ PACOTES=(
   python3-pip
   locales
   terminator
+  sed
 )
 
 echo "📦 Verificando e instalando pacotes essenciais, se necessário..."
@@ -71,7 +72,6 @@ if command -v terminator &>/dev/null; then
 else
   echo "  ⚠️ Terminator não encontrado. Pulei a configuração como terminal padrão."
 fi
-
 
 echo "🧹 Limpando cache do apt..."
 apt clean
