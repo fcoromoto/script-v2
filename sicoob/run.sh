@@ -63,13 +63,24 @@ else
   echo "  ✅ Permissões já estão corretas."
 fi
 
-# Define o Terminator como terminal padrão
+# Define o Terminator como terminal padrão (persistente via mimeapps.list)
 echo "🖥️ Definindo Terminator como terminal padrão do sistema..."
+
 TERMINATOR_BIN="/usr/bin/terminator"
+MIMEAPPS_FILE="$USER_HOME/.config/mimeapps.list"
+
 if command -v terminator &>/dev/null; then
-  sudo -u "$SUDO_USER" dbus-launch gsettings set org.cinnamon.desktop.default-applications.terminal exec "$TERMINATOR_BIN"
-  sudo -u "$SUDO_USER" dbus-launch gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg "-x"
-  echo "  ✅ Terminator definido como terminal padrão."
+  sudo -u "$SUDO_USER" mkdir -p "$USER_HOME/.config"
+
+  echo "  🧩 Aplicando fallback no mimeapps.list para garantir persistência..."
+  if [ -f "$MIMEAPPS_FILE" ]; then
+    sudo -u "$SUDO_USER" sed -i '/x-terminal-emulator/d' "$MIMEAPPS_FILE"
+  fi
+
+  sudo -u "$SUDO_USER" bash -c "echo '[Default Applications]' >> '$MIMEAPPS_FILE'"
+  sudo -u "$SUDO_USER" bash -c "echo 'x-terminal-emulator.desktop=terminator.desktop' >> '$MIMEAPPS_FILE'"
+
+  echo "  ✅ Terminator configurado como terminal padrão persistente."
 else
   echo "  ⚠️ Terminator não encontrado. Pulei a configuração como terminal padrão."
 fi
