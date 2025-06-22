@@ -63,28 +63,6 @@ else
   echo "  ✅ Permissões já estão corretas."
 fi
 
-# Define o Terminator como terminal padrão (persistente via mimeapps.list)
-echo "🖥️ Definindo Terminator como terminal padrão do sistema..."
-
-TERMINATOR_BIN="/usr/bin/terminator"
-MIMEAPPS_FILE="$USER_HOME/.config/mimeapps.list"
-
-if command -v terminator &>/dev/null; then
-  sudo -u "$SUDO_USER" mkdir -p "$USER_HOME/.config"
-
-  echo "  🧩 Aplicando fallback no mimeapps.list para garantir persistência..."
-  if [ -f "$MIMEAPPS_FILE" ]; then
-    sudo -u "$SUDO_USER" sed -i '/x-terminal-emulator/d' "$MIMEAPPS_FILE"
-  fi
-
-  sudo -u "$SUDO_USER" bash -c "echo '[Default Applications]' >> '$MIMEAPPS_FILE'"
-  sudo -u "$SUDO_USER" bash -c "echo 'x-terminal-emulator.desktop=terminator.desktop' >> '$MIMEAPPS_FILE'"
-
-  echo "  ✅ Terminator configurado como terminal padrão persistente."
-else
-  echo "  ⚠️ Terminator não encontrado. Pulei a configuração como terminal padrão."
-fi
-
 # Instalação e configuração do ZSH com tema Agnoster
 echo "🧠 Instalando e configurando ZSH com Oh My Zsh + tema Agnoster..."
 
@@ -115,13 +93,34 @@ su - "$SUDO_USER" -c '
 echo "🔁 Alterando shell padrão para Zsh (usuário $SUDO_USER)..."
 chsh -s "$(which zsh)" "$SUDO_USER"
 
+# Configura Terminator como terminal padrão persistente via autostart
+echo "🖥️ Configurando Terminator como terminal padrão via autostart (Ctrl+Alt+T)..."
+
+AUTOSTART_DIR="$USER_HOME/.config/autostart"
+TERMINATOR_AUTOSTART="$AUTOSTART_DIR/set-terminal-default.desktop"
+
+sudo -u "$SUDO_USER" mkdir -p "$AUTOSTART_DIR"
+
+cat <<EOF | sudo -u "$SUDO_USER" tee "$TERMINATOR_AUTOSTART" > /dev/null
+[Desktop Entry]
+Type=Application
+Exec=gsettings set org.cinnamon.desktop.default-applications.terminal exec 'terminator' && gsettings set org.cinnamon.desktop.default-applications.terminal exec-arg '-x'
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Set Terminator Default
+Comment=Define o Terminator como terminal padrão na sessão Cinnamon
+EOF
+
+echo "  ✅ Autostart configurado: $TERMINATOR_AUTOSTART"
+
 echo "🧹 Limpando cache do apt..."
 apt clean
 
 echo "✅ Ambiente básico configurado com sucesso!"
 
 echo ""
-echo "⚠️ Para que o Terminator seja reconhecido como terminal padrão em toda a sessão,"
-echo "   você precisa fazer logout e login novamente, ou reiniciar o computador."
+echo "⚠️ Para que o Terminator seja reconhecido pelo atalho Ctrl + Alt + T,"
+echo "   reinicie sua sessão ou o computador após a execução deste script."
 
 echo "⚠️ Para ativar o ZSH com Agnoster, feche o terminal atual e abra um novo."
